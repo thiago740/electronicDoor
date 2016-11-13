@@ -1,5 +1,3 @@
-# eletronicDoor
-
 /*
       Programa como interface Serial monitor, reset de senha,
     login do administrador e idição de senha. 
@@ -11,6 +9,8 @@
 
 
 int count = 0, entrada = 0;
+int ID;
+char id[2];
 char pass [] = {'1', '2', '3', '4', '5', '6'}; // senha padrão, você pode muito bem atera-lá
 char comparador1[6];
 int D0 = 11;  // Tranca
@@ -203,7 +203,8 @@ void unlocked() {
 //------------------------------------------------------------
 
 void login() {
-      
+        ID_login();
+        delay(200);
         Serial.print("Digite sua senha: ");
         Led_state(); // mensagem, som e LED
         while (count < 6 ) { // enquanto não entrou os 4 números necessários para a senha
@@ -214,7 +215,7 @@ void login() {
             delay(duration);
             //---------------------------------------------------------------
 
-            pass[count] = EEPROM.read(count); // Resgata senha alterada
+            pass[count] = EEPROM.read(count+(ID * 6)); // Resgata senha alterada
 
             //---------------------------------------------------------------
             if (key == pass[count])count += 1; // verifica na sequencia da senha, se correto aumenta contador
@@ -271,3 +272,19 @@ void add_ID(){
   
 
 }
+
+void ID_login(){
+        Serial.print("ID: ");
+        count = 0;
+        while (count < 2 ) { // espera ID de 0 a 99
+        char key = keypad.getKey();
+        if (key != NO_KEY) {
+          id[count] = key;
+          count += 1;
+        
+        }
+      }
+      ID = atoi(id);
+      Serial.println(ID);
+    }
+    
