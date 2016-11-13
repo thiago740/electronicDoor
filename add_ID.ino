@@ -8,8 +8,8 @@
 #include <EEPROM.h>
 
 
-int count = 0, entrada = 0;
-int ID;
+int count=0, entrada=0, ID, count_ID=0;
+boolean ID_salvo = true;
 char id[2];
 char pass [] = {'1', '2', '3', '4', '5', '6'}; // senha padrão, você pode muito bem atera-lá
 char comparador1[6];
@@ -274,11 +274,53 @@ void login() {
  
 void add_ID(){
 
-   Led_state();
-   Serial.println("\nNovo usuario");
-  
+  Led_state();
+  Serial.println("\nNova senha: ");
+  //Led_state(); // mensagem, som e LED
+  int entrada = 0; // inicializa entrada
+  while (count < 6) { // enquanto contador for menor que 4
+    char key = keypad.getKey(); // obtem informação do teclado
+    if (key != NO_KEY) { // se algo foi teclado
+      Serial.print('*');
+      delay(duration);
 
+      comparador1[count] = key;
+
+      count += 1; // próximo dígito
+    }
+  }
+
+  if (count == 6) {
+    count = 0;
+    Serial.println("\nDigite novamente: ");
+    while (count < 6) { // enquanto contador for menor que 4
+      char key = keypad.getKey(); // obtem informação do teclado
+      if (key != NO_KEY) { // se algo foi teclado
+        Serial.print('*');
+        entrada += 1; // aumenta contador de entrada
+        delay(duration);
+
+        if (comparador1[count] == key) count += 1; // Conferi se é a mesma senha digitada
+
+          if (count == 6){
+              Serial.println("\nSenha salva com sucesso.");
+              for(int i=0;i<6;i++) EEPROM.write(i, comparador1[i+(ID*6)]); // salva a senha do ID na memoria
+      }
+      
+          if ((key == '*') || (entrada == 6)) { // foi telcado * 4 entradas  
+              ID=0;
+              if(count != entrada) Serial.println("\nInvalido!.");
+              delay(2000);
+             // key_init() ; // inicializa sistema
+              break; // sai
+            }    
+ 
+        }
+      }
+    }
 }
+
+//-----------------------------------------------------------------------
 
 void ID_login(){
         Serial.print("ID: ");
