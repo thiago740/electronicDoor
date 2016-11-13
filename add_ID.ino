@@ -58,6 +58,7 @@ void setup() {
   Serial.println(EEPROM.read(3)-48);
   Serial.println(EEPROM.read(4)-48);
   Serial.println(EEPROM.read(5)-48);
+    Serial.println(EEPROM.read(1020));
   Serial.println("==============================");
   
  /* EEPROM.write(6, '1');
@@ -98,7 +99,7 @@ void loop() {
         break; 
       case '*': alterar_senha();
         break; 
-      case 'A': //add_ID();]
+      case 'A': add_ID();
       
         break; 
     }
@@ -258,9 +259,11 @@ void login() {
           entrada += 1;
           Serial.print('*');
           delay(duration);
-          if (key == pass[count])count += 1;
+          if (key == pass[count+(ID*6)]) count += 1;
           if ( count == 6 ) { // foi teclado a senha antiga corretamente
+         
             get_new_pass();// chama função para entrada da nova senha
+        
           }
           if ((key == '*') || (entrada == 6)) { // foi teclado * ou entrou 4 números errados
                       key_init();// inicializa
@@ -271,8 +274,36 @@ void login() {
     }
 
  //-----------------------------------------------------------------------]
- 
-void add_ID(){
+
+ void add_ID(){
+  
+      Serial.println("Criando novo usuario. ");
+      Serial.println("Senha do administrador:" );
+      Led_state();;// mensagem para entrar a senha antiga
+      
+      int entrada = 0;
+      while (count < 6 ) {
+        char key = keypad.getKey();
+        if (key != NO_KEY) {
+          entrada += 1;
+          Serial.print('*');
+          delay(duration);
+          if (key == pass[count]) count += 1;
+          if ( count == 6 ) { // foi teclado a senha antiga corretamente
+         
+           ID_senha();
+        
+          }
+          if ((key == 'A') || (entrada == 6)) { // foi teclado * ou entrou 4 números errados
+                      key_init();// inicializa
+            break; // interrompe loop
+          }
+        }
+      }
+    }
+
+ //-----------------------------------------------------------------------]
+void ID_senha(){
 
   Led_state();
   Serial.println("\nNova senha: ");
@@ -291,6 +322,7 @@ void add_ID(){
   }
 
   if (count == 6) {
+    count_ID = EEPROM.read(1020);
     count = 0;
     Serial.println("\nDigite novamente: ");
     while (count < 6) { // enquanto contador for menor que 4
@@ -304,14 +336,22 @@ void add_ID(){
 
           if (count == 6){
               Serial.println("\nSenha salva com sucesso.");
-              for(int i=0;i<6;i++) EEPROM.write(i, comparador1[i+(ID*6)]); // salva a senha do ID na memoria
-      }
+              for(int i=0;i<6;i++) EEPROM.write(i, comparador1[i + (count_ID * 6)]); // salva a senha do ID na memoria
+    
+     Serial.print("ID: ");
+     Serial.println(count_ID);
+      count_ID += 1; 
+      delay(duration);
+      EEPROM.write(1020, count_ID);  
+      Serial.print("ID: ");
       
-          if ((key == '*') || (entrada == 6)) { // foi telcado * 4 entradas  
+      }
+          
+          if ((key == 'A') || (entrada == 6)) { // foi telcado * 6 entradas  
               ID=0;
               if(count != entrada) Serial.println("\nInvalido!.");
               delay(2000);
-             // key_init() ; // inicializa sistema
+             // key_init() ; // inicializ a sistema
               break; // sai
             }    
  
