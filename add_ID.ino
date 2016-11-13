@@ -59,7 +59,14 @@ void setup() {
   Serial.println(EEPROM.read(4)-48);
   Serial.println(EEPROM.read(5)-48);
   Serial.println("==============================");
-
+  
+ /* EEPROM.write(6, '1');
+  EEPROM.write(7, '2');
+  EEPROM.write(8, '3');
+  EEPROM.write(9, '4');
+  EEPROM.write(10,'5');
+  EEPROM.write(11,'6');
+  */
 }
 //---------------------------------------------------------
 //-------------------------void-loop-----------------------
