@@ -8,7 +8,7 @@
 #include <EEPROM.h>
 
 
-int count=0, entrada=0, ID, count_ID=0;
+int count = 0, entrada = 0, ID, count_ID = 0;
 boolean ID_salvo = true;
 char id[2];
 char pass [] = {'1', '2', '3', '4', '5', '6'}; // senha padrão, você pode muito bem atera-lá
@@ -58,9 +58,18 @@ void setup() {
   Serial.println(EEPROM.read(3)-48);
   Serial.println(EEPROM.read(4)-48);
   Serial.println(EEPROM.read(5)-48);
-    Serial.println(EEPROM.read(1020));
   Serial.println("==============================");
   
+  Serial.println(EEPROM.read(6)-48);
+  Serial.println(EEPROM.read(7)-48);
+  Serial.println(EEPROM.read(8)-48);
+  Serial.println(EEPROM.read(9)-48);
+  Serial.println(EEPROM.read(10)-48);
+  Serial.println(EEPROM.read(11)-48);
+  Serial.println(EEPROM.read(1020));
+  Serial.println("==============================");
+
+  EEPROM.write(1020, 1);
  /* EEPROM.write(6, '1');
   EEPROM.write(7, '2');
   EEPROM.write(8, '3');
@@ -259,7 +268,7 @@ void login() {
           entrada += 1;
           Serial.print('*');
           delay(duration);
-          if (key == pass[count+(ID*6)]) count += 1;
+          if (key == pass[count]) count += 1;
           if ( count == 6 ) { // foi teclado a senha antiga corretamente
          
             get_new_pass();// chama função para entrada da nova senha
@@ -325,7 +334,7 @@ void ID_senha(){
     count_ID = EEPROM.read(1020);
     count = 0;
     Serial.println("\nDigite novamente: ");
-    while (count < 6) { // enquanto contador for menor que 4
+    while (count < 6) { // enquanto contador for menor que 6
       char key = keypad.getKey(); // obtem informação do teclado
       if (key != NO_KEY) { // se algo foi teclado
         Serial.print('*');
@@ -336,7 +345,7 @@ void ID_senha(){
 
           if (count == 6){
               Serial.println("\nSenha salva com sucesso.");
-              for(int i=0;i<6;i++) EEPROM.write(i, comparador1[i + (count_ID * 6)]); // salva a senha do ID na memoria
+              for(int i=0;i<6;i++) EEPROM.write(i + (count_ID * 6), comparador1[i]); // salva a senha do ID na memoria
     
      Serial.print("ID: ");
      Serial.println(count_ID);
