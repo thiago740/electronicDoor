@@ -52,22 +52,10 @@ void setup() {
   pinMode(redPin, OUTPUT);
   key_init();
 
-  Serial.println(EEPROM.read(0)-48);
-  Serial.println(EEPROM.read(1)-48);
-  Serial.println(EEPROM.read(2)-48);
-  Serial.println(EEPROM.read(3)-48);
-  Serial.println(EEPROM.read(4)-48);
-  Serial.println(EEPROM.read(5)-48);
-  Serial.println("==============================");
-  
-  Serial.println(EEPROM.read(6)-48);
-  Serial.println(EEPROM.read(7)-48);
-  Serial.println(EEPROM.read(8)-48);
-  Serial.println(EEPROM.read(9)-48);
-  Serial.println(EEPROM.read(10)-48);
-  Serial.println(EEPROM.read(11)-48);
-  Serial.println(EEPROM.read(1020));
-  Serial.println("==============================");
+for(int i=0; i<6; i++) Serial.println(EEPROM.read(i)-48); 
+                       Serial.println("==============================");
+for(int i=6; i<12;i++) Serial.println(EEPROM.read(i)-48);
+                        Serial.println("==============================");
 
   EEPROM.write(1020, 1);
  /* EEPROM.write(6, '1');
