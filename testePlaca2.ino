@@ -6,17 +6,19 @@
            - Edição de senh
            - Criar e deleta novo ID.
            - LCD 
+           - Buzzer
     
     Falta: 
            
            - Registrar Data e hora do acesso do Usuario
              - Comunicação ESP/Celular
 */
-
-#include <Keypad.h>
 #include <Wire.h>
+#include <Keypad.h>
 #include <EEPROM.h>
+#include "pitches.h"
 #include <LiquidCrystal.h>
+
 
 LiquidCrystal lcd(19, 18, 17, 16, 15, 14);
 
@@ -27,8 +29,9 @@ char pass[6]; // número de caracters
 char comparador1[6];
 char bluet;
 int count = 0, entrada = 0, ID, count_ID = 0;
-int D0 = 11;  // Tranca
-int D1 = 0; 
+int D0;  // Tranca
+int D1; 
+int buzzer = 11;
 int Reset; 
 int estadoReset = 0;
 
@@ -49,11 +52,11 @@ char keys[ROWS][COLS] = {
   {'*', '0', '#', 'D'}
 };// deinição do layout do teclado
 
-/*byte rowPins[ROWS] = {2, 3, 4, 5}; // pinagem para as linhas do teclado
+byte rowPins[ROWS] = {2, 3, 4, 5}; // pinagem para as linhas do teclado
 byte colPins[COLS] = {6, 7, 8, 9}; // pinagem para as colunas do teclado
-// mapeamento do teclado*/
-byte rowPins[ROWS] = {0, 2, 3, 4}; // pinagem para as linhas do teclado
-byte colPins[COLS] = {5, 6, 7, 8}; // pinagem para as colunas do teclado
+// mapeamento do teclado
+/*byte rowPins[ROWS] = {0, 2, 3, 4}; // pinagem para as linhas do teclado
+byte colPins[COLS] = {5, 6, 7, 8}; // pinagem para as colunas do teclado*/
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 
@@ -67,6 +70,7 @@ void setup() {
   pinMode(D1, OUTPUT);
   digitalWrite(LCD, HIGH);
   pinMode(LCD, OUTPUT);
+  pinMode(buzzer, OUTPUT);
   
   pinMode(Reset, INPUT_PULLUP);
   pinMode(yellowPin, OUTPUT);
@@ -74,7 +78,6 @@ void setup() {
   key_init();
  
 
-     admin_Reset();
   
   for(int i=0; i<6; i++) Serial.println(EEPROM.read(i)-48); 
   Serial.println("==============================");
@@ -85,8 +88,8 @@ void setup() {
 }
 
 //-------------------------void-loop-----------------------
-/*void led_LED(){
-  
+void led_LED(){
+/*
   unsigned long currentMillis = millis();    //Tempo atual em ms
 
   //Lógica de verificação do tempo
@@ -102,10 +105,10 @@ void setup() {
     }
 
 
-  }
+  }*/
 
 }
-*/
+
 void loop() {
   
   for(int i=0; i<6; i++) pass[i] = EEPROM.read(i); // Resgatar senha do Administrador (sem usar ID)
@@ -133,8 +136,12 @@ void loop() {
 
  
   char key = keypad.getKey(); // obtém informação do teclado
+
+   if (key) tone(buzzer, NOTE_F5, 15);
   if (key != NO_KEY) { // se foi teclado algo
     Serial.println(key);
+    tone(13, NOTE_C4, 100);
+   
     
     switch(key){
       case '#': login();  
@@ -163,11 +170,12 @@ void login() {
     Led_state(); // mensagem, som e LED
     while (count < 6 ) { // enquanto não entrou os 4 números necessários para a senha
       char key = keypad.getKey(); // obtém informação do teclado
+      if (key) if (key) tone(buzzer, NOTE_F5, 15);
       if (key != NO_KEY) { // se foi teclado algo
         Serial.print('*');
         lcd.print('*');
         entrada += 1; // aumenta contrador de entrada
-        delay(duration);
+        //delay(duration);
       
       //--------------- Argumento -----------------------------------------
 
@@ -221,11 +229,12 @@ void add_ID(){
   int entrada = 0;
   while (count < 6 ) {
     char key = keypad.getKey();
+    if (key) if (key) tone(buzzer, NOTE_F5, 15);
     if (key != NO_KEY) {
       entrada += 1;
       Serial.print('*');
       lcd.print('*');
-      delay(duration);
+      //delay(duration);
       if (key == pass[count]) count += 1;
       if ( count == 6 ) { // foi teclado a senha antiga corretamente 
         get_new_pass();// chama função para entrada da nova senha
@@ -255,12 +264,13 @@ void get_new_pass() {
     
     Led_state(); // mensagem, som e LED
     int entrada = 0; // inicializa entrada
-      while (count < 6) { // enquanto contador for menor que 4
+      while (count < 6) { // enquanto contador for menor que 4 
         char key = keypad.getKey(); // obtem informação do teclado
+          if (key) if (key) tone(buzzer, NOTE_F5, 15);
           if (key != NO_KEY) { // se algo foi teclado
           Serial.print('*');
           lcd.print('*');
-          delay(duration);
+          //delay(duration);
 
           comparador1[count] = key;
           count += 1; // próximo dígito
@@ -279,11 +289,13 @@ void get_new_pass() {
       
         while (count < 6) { // enquanto contador for menor que 4
         char key = keypad.getKey(); // obtem informação do teclado
+          if (key) if (key) tone(buzzer, NOTE_F5, 15);
           if (key != NO_KEY) { // se algo foi teclado
+            
             Serial.print('*');
             lcd.print('*');
             entrada += 1; // aumenta contador de entrada
-            delay(duration);
+            //delay(duration);
       
             if (comparador1[count] == key) count += 1; // Conferi se é a mesma senha digitada
             if (count == 6){
@@ -350,11 +362,12 @@ void del_ID(){
   int entrada = 0;
   while (count < 6 ) {
     char key = keypad.getKey();
+    if (key) if (key) tone(buzzer, NOTE_F5, 15);
     if (key != NO_KEY) {
       entrada += 1;
       Serial.print('*');
       lcd.print('*');
-      delay(duration);
+      //delay(duration);
       if (key == pass[count]) count += 1;
       if ( count == 6 ) { // foi teclado a senha do Administrador
         
@@ -371,11 +384,13 @@ void del_ID(){
         int entrada = 0;
         while (count < 6 ) {
           char key = keypad.getKey();
+          if (key) tone(buzzer, NOTE_F5, 15);
           if (key != NO_KEY) {
-            entrada += 1;
+          entrada += 1;
+            if (key) tone(buzzer, NOTE_F5, 15);
             Serial.print('*');
             lcd.print('*');
-            delay(duration);
+            //delay(duration);
             if (key == pass[count]) count += 1;
             if ( count == 6 ) { // foi teclado a senha do Administrador
         
@@ -429,6 +444,7 @@ void ID_login(){
         count = 0;
         while (count < 2 ) { // espera ID de 0 a 99
         char key = keypad.getKey();
+        if (key) tone(buzzer, NOTE_F5, 15);
         if (key != NO_KEY) {
           id[count] = key;
           count += 1;
@@ -466,7 +482,6 @@ void admin_Reset(){
 
 void IDs_Reset(){
  // int IDs_Rest [20]= {1, 0, 0, 0, 0 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; 
-  
     for(int i=1; i<20;i++) EEPROM.write(i+900, 0);
     EEPROM.write(900, 1);
   
@@ -489,7 +504,7 @@ void key_init(){
  
   Serial.println("\nLaboratorio");
   lcd_inicial();
-  
+
   count = 0;
   digitalWrite(redPin, HIGH);
   digitalWrite(yellowPin, LOW);
@@ -536,3 +551,25 @@ void LCD_unlocked(){
   
   
 }
+/*
+void IDs_Disponiveis(){
+  lcd.clear();
+  delay(200);
+  Serial.println("ID disponivel:");
+  lcd.setCursor(0, 2);
+  lcd.print("ID disponivel:");
+  for(int i=0; i<200; i++) IDs[i] = EEPROM.read(900+1);
+  for(int x=0; x<200; x++){
+    if(IDs[x] == 1 ){
+      Serial.print("ID ");
+      Serial.println(x);
+      lcd.setCursor(1, 5);
+      lcd.print("ID :");
+      lcd.setCursor(1, 9);
+      lcd.print(x);
+
+      delay(5000);
+    }
+  }
+}
+*/
